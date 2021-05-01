@@ -6,7 +6,7 @@ import datetime
 import warnings
 import matplotlib.pyplot as plt
 
-class wordCounter2:
+class wordCounter:
 
     def __init__(self, filename):
         self.filename=filename
@@ -157,6 +157,6 @@ def multifile_reading_word_counter():
     #running the actual word count on the files given
     for file_to_be_read in files_to_be_read:
         print ('\n###################reading '+file_to_be_read[:-1]+"###################")
-        wordCounter2(file_to_be_read[:-1])
+        wordCounter(file_to_be_read[:-1])
     
 multifile_reading_word_counter()
