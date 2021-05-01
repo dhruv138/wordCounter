@@ -8,11 +8,12 @@ import matplotlib.pyplot as plt
 
 class wordCounter:
 
-    WCdictionary = {}
-    sorted_list = []
-    unique_letter_count = {}
-
     def __init__(self, filename):
+        self.WCdictionary = {}
+        self.sorted_list = []
+        self.unique_letter_count = {}
+        self.filename = ''
+        
         self.filename=filename
         ####
         #### run program as "python wordCounter.py '<file to be counted>'"
@@ -134,46 +135,3 @@ class wordCounter:
     #sorting function to create aplhabetically sorted list of keys
     def sort_dictionary(self):
         self.sorted_list = sorted(self.WCdictionary.keys(), key=str.lower)
-
-def multifile_reading_word_counter():
-
-    filepath = ''
-    
-    #validating presense of file to read
-    try:
-        filepath = sys.argv[1]
-    except IndexError:
-        print ("missing file(s) to read")
-        print ("run as python wordCounter.py '<filepath>'")
-        print ("Example:\npython wordcounter.py 'foo*bar/bar*.txt'")
-        return
-	
-    #validating input by making sure reverse traversal and root traversal is not happening
-    if (not filepath or ("../" in filepath) or (filepath.startswith('/')) or ("/~/" in filepath)):
-        print ('invalid file path')
-        return
-
-    #validating that the passed in file exists
-    os.system('ls '+filepath+' >> __reading_files.txt')
-    test = open('__reading_files.txt', 'r')
-    test2 = test.readline()
-    if len(test2)==0:
-        print('invalid file path')
-        return
-    test.close()
-    os.system('rm -rf __reading_files.txt')
-
-    #extracting files on which to word count
-    found_files = os.popen('ls '+filepath)
-    files_to_be_read = found_files.readlines()
-
-    #running the actual word count on the files given
-    for file_to_be_read in files_to_be_read:
-        print ('\n###################reading '+file_to_be_read[:-1]+"###################")
-        holder = wordCounter(file_to_be_read[:-1])
-        holder.print_dictionary_alphabetically()
-        holder.letter_counter()
-        holder.print_letter_count()
-
-    
-multifile_reading_word_counter()
