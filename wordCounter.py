@@ -8,6 +8,10 @@ import matplotlib.pyplot as plt
 
 class wordCounter:
 
+    WCdictionary = {}
+    sorted_list = []
+    unique_letter_count = {}
+
     def __init__(self, filename):
         self.filename=filename
         ####
@@ -21,28 +25,28 @@ class wordCounter:
         
         #counting
         time_word_count_start = datetime.datetime.now()
-        dictionary = self.word_count(words)
+        self.word_count(words)
         time_word_count_end = datetime.datetime.now()
         time_to_word_count = time_word_count_end - time_word_count_start
 
         #post processing
         time_postprocess_start = datetime.datetime.now()
-        sorted_list = self.sort_dictionary(dictionary)
-        self.print_dictionary_alphabetically(sorted_list, dictionary)
+        self.sort_dictionary()
+        #self.print_dictionary_alphabetically()
 
         #time processing
         time_program_end = datetime.datetime.now()
         time_to_post_process = time_program_end - time_postprocess_start
         total_execution_time = time_program_end - time_program_init
-        #plot_dictionary_alphabetically(sorted_list, dictionary)
+        #self.plot_dictionary_alphabetically()
         
         print("time to preprocess data: "+str(time_to_data_extraction)[6:11]+" in seconds")
         print("time to count words: "+str(time_to_word_count)[6:11]+" in seconds")
         print("time to post process: "+str(time_to_post_process)[6:11]+" in seconds")
         print("total time to execute: "+str(total_execution_time)[6:11]+" in seconds")
 
-      #	print_dictionary(dictionary)
-      #	plot_dictionary(dictionary)
+      #	print_dictionary()
+      #	plot_dictionary()
 
     #function responsible for reducing the string to a readable format and removing punctuation
     def preprocess(self, OriginalString):
@@ -66,34 +70,43 @@ class wordCounter:
 
     #Hashmapping function responsible for accounting for word frequency
     def word_count(self, words):
-        dictionary_of_words = {}
         for word in words:
             try:
-                dictionary_of_words[word] += 1
+                self.WCdictionary[word] += 1
             except KeyError:
-                dictionary_of_words[word] = 1
-                
-        return dictionary_of_words
+                self.WCdictionary[word] = 1
+
+    def letter_counter(self):
+        for word in self.WCdictionary:
+            for letter in word:
+                try:
+                    self.unique_letter_count[letter] += self.WCdictionary[word]
+                except KeyError:
+                    self.unique_letter_count[letter] = self.WCdictionary[word]
 
     #iterate through frequncy list to print output
-    def print_dictionary(self, dictionary):
-        for tuple in dictionary:
-            print (tuple+" : "+str(dictionary[tuple]))
+    def print_dictionary(self):
+        for tuple in self.WCdictionary:
+            print (tuple+" : "+str(self.WCdictionary[tuple]))
 
     #iterate through frequncy list to print output using sorted list as key
-    def print_dictionary_alphabetically(self, list, dictionary):
-        for key in list:
-            print (key+" : "+str(dictionary[key]))
+    def print_dictionary_alphabetically(self):
+        for key in self.sorted_list:
+            print (key+" : "+str(self.WCdictionary[key]))
+
+    def print_letter_count(self):
+        for tuple in self.unique_letter_count:
+            print (tuple+" : "+str(self.unique_letter_count[tuple]))
 
     #plotting fucntion to show graphical representation of frequency map
-    def plot_dictionary(self, dictionary):
+    def plot_dictionary(self):
         warnings.filterwarnings("ignore")
         key = []
         value = []
 
-        for tuple in dictionary:
+        for tuple in self.WCdictionary:
             key.append(tuple)
-            value.append(dictionary[tuple])
+            value.append(self.WCdictionary[tuple])
         
         fig = plt.figure(1)
         ax = fig.add_subplot(111)
@@ -102,25 +115,25 @@ class wordCounter:
         plt.show()
    
     #plotting fucntion to show graphical representation of frequency map, keyed alphabetically
-    def plot_dictionary_alphabetically(self,list,dictionary):
+    def plot_dictionary_alphabetically(self):
         warnings.filterwarnings("ignore")
         value = []
 
-        for key in list:
-            value.append(dictionary[key])
+        for key in self.sorted_list:
+            value.append(self.WCdictionary[key])
         
         fig = plt.figure(1)
         ax = fig.add_subplot(111)
-        plt.bar(list, value)
-        ax.set_xticklabels(list, fontsize = 6, rotation = 90)
+        plt.bar(self.sorted_list, value)
+        ax.set_xticklabels(self.sorted_list, fontsize = 6, rotation = 90)
         plt.xlabel('unique word')
         plt.ylabel('rate of occurrence')
         plt.title("Word frequency")
         plt.show()
 
     #sorting function to create aplhabetically sorted list of keys
-    def sort_dictionary(self, dictionary):
-        return sorted(dictionary.keys(), key=str.lower)
+    def sort_dictionary(self):
+        self.sorted_list = sorted(self.WCdictionary.keys(), key=str.lower)
 
 def multifile_reading_word_counter():
 
@@ -157,6 +170,10 @@ def multifile_reading_word_counter():
     #running the actual word count on the files given
     for file_to_be_read in files_to_be_read:
         print ('\n###################reading '+file_to_be_read[:-1]+"###################")
-        wordCounter(file_to_be_read[:-1])
+        holder = wordCounter(file_to_be_read[:-1])
+        holder.print_dictionary_alphabetically()
+        holder.letter_counter()
+        holder.print_letter_count()
+
     
 multifile_reading_word_counter()
